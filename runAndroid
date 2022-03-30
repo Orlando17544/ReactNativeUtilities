@@ -1,0 +1,23 @@
+#!/bin/bash
+	
+deviceAvailable="$(adb devices | grep -Po 'emulator.+?device' | grep -Po 'emulator.+?(?=\t)')"
+
+if [[ "$deviceAvailable" == "" ]]; then
+	emulator -list-avds
+
+	echo ""
+
+	read -p "What device would you like? " device
+	clear
+
+	emulator -avd "$device" &> /dev/null &
+
+deviceAvailable="$(adb devices | grep -Po 'emulator.+?device' | grep -Po 'emulator.+?(?=\t)')"
+
+	while [[ "$deviceAvailable" == "" ]]; do
+		sleep 1
+		deviceAvailable="$(adb devices | grep -Po 'emulator.+?device' | grep -Po 'emulator.+?(?=\t)')"
+	done
+fi
+
+npx react-native run-android --deviceId "$(adb devices | grep -Po 'emulator.+?device' | grep -Po 'emulator.+?(?=\t)')"
